@@ -2,14 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Index from '../components/index.vue'
-
+// 配置路由的文件
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    redirect: '/Index'
+    redirect: '/index'
   },
   {
     path: '/login',
@@ -25,6 +24,16 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+// 拦截器
+router.beforeEach((to, form, next) => {
+  const token = localStorage.getItem('token')
+  if (to.path === '/login' || token) {
+    next()
+  } else {
+    next('/login')
+  }
 })
 
 export default router

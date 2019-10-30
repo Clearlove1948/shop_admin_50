@@ -1,7 +1,7 @@
 
 <template>
   <div class="login">
-    <el-form :model="form" class="myForm" label-width="80px" :rules="rules" ref="aa">
+    <el-form :model="form" class="myForm" label-width="80px" :rules="rules" ref="form" status-icon>
       <el-form-item label="用户名" prop="username">
         <el-input placeholder="请输入用户名" v-model="form.username"></el-input>
       </el-form-item>
@@ -48,10 +48,10 @@ export default {
       console.log('submit!')
     },
     fn () {
-      this.$refs.aa.resetFields()
+      this.$refs.form.resetFields()
     },
     fn2 () {
-      this.$refs.aa.validate((flag) => {
+      this.$refs.form.validate((flag) => {
         if (!flag) return
         console.log('发送ajax')
         // eslint-disable-next-line no-undef
@@ -71,16 +71,18 @@ export default {
         // 优化后
         axios.post('http://localhost:8888/api/private/v1/login', this.form).then((res) => {
           // eslint-disable-next-line no-unused-vars
-          const { meta } = res.data
+          const { meta, data } = res.data
           if (meta.status === 200) {
+            // 登录时存储token值
+            localStorage.setItem('token', data.token)
             this.$message({
               // 设置提示语 颜色 持续时间 (提示框的设置)
               message: meta.msg,
               type: 'success',
               duration: 1000
             })
-            // 跳转到首页
-            this.$router.push({ name: '/index' })
+            // 跳转到首页 传个对象的意思是 找到name值为index的那一条规则
+            this.$router.push({ name: 'index' })
           } else {
             console.log(meta.msg)
             this.$message.error({
